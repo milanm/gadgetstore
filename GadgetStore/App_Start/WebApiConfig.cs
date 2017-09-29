@@ -14,11 +14,11 @@ namespace GadgetStore
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            //config.routes.maphttproute(
+            //    name: "defaultapi",
+            //    routetemplate: "api/{controller}/{id}",
+            //    defaults: new { id = routeparameter.optional }
+            //);
         }
     }
 }
