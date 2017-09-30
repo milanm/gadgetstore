@@ -12,7 +12,14 @@
         $routeProvider.when("/complete", {
             templateUrl: "app/views/orderSubmitted.html"
         });
+        $routeProvider.when("/login", {
+            templateUrl: "app/views/login.html"
+        });
+        $routeProvider.when("/register", {
+            templateUrl: "app/views/register.html"
+        });
         $routeProvider.otherwise({
             templateUrl: "app/views/gadgets.html"
         });
+     
     });

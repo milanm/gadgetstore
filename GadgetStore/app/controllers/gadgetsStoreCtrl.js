@@ -3,7 +3,10 @@
     .constant('ordersUrl', 'http://localhost:64354/api/orders')
     .constant('categoriesUrl', 'http://localhost:64354/api/categories')
     .constant('tempOrdersUrl', 'http://localhost:64354/api/sessions/temporders')
-    .controller('gadgetStoreCtrl', function ($scope, $http, $location, gadgetsUrl, categoriesUrl, ordersUrl, tempOrdersUrl, cart) {
+    .constant('registerUrl', '/api/Account/Register')
+    .constant('tokenUrl', '/Token')
+    .constant('tokenKey', 'accessToken')
+    .controller('gadgetStoreCtrl', function ($scope, $http, $location, gadgetsUrl, categoriesUrl, ordersUrl, tempOrdersUrl, registerUrl, cart, tokenKey) {
 
         $scope.data = {};
 
@@ -24,19 +27,31 @@
             });
 
         $scope.sendOrder = function (shippingDetails) {
+            var token = sessionStorage.getItem(tokenKey);
+            console.log(token);
+
+            var headers = {};
+            if (token) {
+                headers.Authorization = 'Bearer ' + token;
+            }
+
             var order = angular.copy(shippingDetails);
             order.gadgets = cart.getProducts();
-            $http.post(ordersUrl, order)
+            $http.post(ordersUrl, order, { headers: { 'Authorization': 'Bearer ' + token } })
                 .success(function (data, status, headers, config) {
                     $scope.data.OrderLocation = headers('Location');
                     $scope.data.OrderID = data.OrderID;
                     cart.getProducts().length = 0;
                     $scope.saveOrder();
-                })
-                .error(function (error) {
-                    $scope.data.orderError = error;
-                }).finally(function () {
                     $location.path("/complete");
+                })
+                .error(function (data, status, headers, config) {
+                    if (status != 401)
+                        $scope.data.orderError = data.Message;
+                    else {
+                        $location.path("/login");
+                    }
+                }).finally(function () {
                 });
         }
 
@@ -73,4 +88,12 @@
                 });
         }
 
+        $scope.logout = function () {
+            sessionStorage.removeItem(tokenKey);
+        }
+        $scope.createAccount = function () {
+            $location.path("/register");
+        }
+
+ 
     });
